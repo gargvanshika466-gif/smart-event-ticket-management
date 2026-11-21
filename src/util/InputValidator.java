@@ -4,14 +4,16 @@ import exception.InvalidInputException;
 
 public class InputValidator {
     public static void validateEmail(String email) throws InvalidInputException {
-        if (email == null || email.trim().isEmpty()) {
-            throw new InvalidInputException("Email cannot be empty");
+        int at = email.indexOf('@');
+        int dot = email.lastIndexOf('.');
+        if (at <= 0) {
+            throw new InvalidInputException("Email must have text before '@'");
         }
-        if (!email.contains("@")) {
-            throw new InvalidInputException("Email must contain '@'");
+        if (dot < at + 2) {
+            throw new InvalidInputException("Email must have a domain with '.' after '@'");
         }
-        if (email.indexOf('.', email.indexOf('@')) == -1) {
-            throw new InvalidInputException("Email must have a '.' after '@'");
+        if (dot == email.length() - 1) {
+            throw new InvalidInputException("Email cannot end with '.'");
         }
     }
 
