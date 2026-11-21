@@ -13,18 +13,42 @@ public class EventService {
     private final HashMap<String, Event> events = new HashMap<>();
 
     public void createEvent(Event event) throws InvalidInputException {
-        // TODO
+        if (event == null) {
+            throw new InvalidInputException("Event cannot be null");
+        }
+        if (event.getId() == null || event.getId().trim().isEmpty()) {
+            throw new InvalidInputException("Event ID cannot be empty");
+        }
+        if (events.containsKey(event.getId())) {
+            throw new InvalidInputException("Event ID already exists: " + event.getId());
+        }
+        events.put(event.getId(), event);
     }
     public void addCategoryToEvent(String eventId, TicketCategory category)
             throws EventNotFoundException, InvalidInputException {
-        // TODO
+        if (category == null) {
+            throw new InvalidInputException("Ticket category cannot be null");
+        }
+        InputValidator.validateTicketPrice(category.getPrice());
+        InputValidator.validateSeatCount(category.getTotalSeats());
+        Event event = getEventById(eventId);
+        event.addTicketCategory(category);
+    }
+    public Event getEventById(String eventId) throws EventNotFoundException {
+        Event event = events.get(eventId);
+        if (event == null) {
+            throw new EventNotFoundException("Event not found: " + eventId);
+        }
+        return event;
     }
 
     public List<Event> getAllEvents() {
-        // TODO
-        return new ArrayList<>();
+        return new ArrayList<>(events.values());
     }
     public void deleteEvent(String eventId) throws EventNotFoundException {
-        // TODO
+        if (!events.containsKey(eventId)) {
+            throw new EventNotFoundException("Event not found: " + eventId);
+        }
+        events.remove(eventId);
     }
 }
