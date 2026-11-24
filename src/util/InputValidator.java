@@ -7,6 +7,11 @@ public class InputValidator {
         if (email == null || email.trim().isEmpty()) {
             throw new InvalidInputException("Email cannot be empty");
         }
+        if (!email.contains("@")) {
+            throw new InvalidInputException("Email must contain '@'");
+        }
+        if (email.indexOf('.', email.indexOf('@')) == -1) {
+            throw new InvalidInputException("Email must have a '.' after '@'");
         int at = email.indexOf('@');
         int dot = email.lastIndexOf('.');
         if (at <= 0) {
