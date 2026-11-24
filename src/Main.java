@@ -13,6 +13,15 @@ import model.Attendee;
 
 import service.EventService;
 import service.UserService;
+import enums.BookingStatus;
+
+import exception.DuplicateBookingException;
+import exception.SeatNotAvailableException;
+
+import model.Booking;
+
+import service.BookingService;
+import service.WaitingListService;
 
 public class Main {
 
@@ -20,6 +29,11 @@ public class Main {
 
     private static final EventService eventService = new EventService();
     private static final UserService userService = new UserService();
+    private static final WaitingListService waitingListService =
+            new WaitingListService();
+
+    private static final BookingService bookingService =
+            new BookingService(eventService, userService, waitingListService);
 
     public static void main(String[] args) {
 
@@ -206,12 +220,13 @@ public class Main {
 
         while (!back) {
 
-            System.out.println("\n--- ATTENDEE MENU ---");
             System.out.println("1. Register New Attendee");
             System.out.println("2. View Available Events");
             System.out.println("3. Book Ticket");
             System.out.println("4. Cancel Booking");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("TEST MENU UPDATED");
+            System.out.println("5. View My Bookings");
+            System.out.println("6. Back to Main Menu");
 
             int choice = getIntInput("Choose an option: ");
 
@@ -263,20 +278,110 @@ public class Main {
                     break;
 
                 case 3:
-                    System.out.println("[Day 3] Book Ticket functionality will be connected later.");
+                    bookTicket();
                     break;
 
                 case 4:
-                    System.out.println("[Day 3] Cancel Booking functionality will be connected later.");
+                    cancelBooking();
                     break;
 
                 case 5:
-                    back = true;
+                    viewMyBookings();
                     break;
 
+                case 6:
+                    back = true;
+                    break;
                 default:
                     System.out.println("[Warning] Please choose a valid option.");
             }
+        }
+    }
+    private static void bookTicket() {
+
+        System.out.println("\n--- BOOK TICKET ---");
+
+        try {
+            System.out.print("Enter Attendee ID: ");
+            String userId = scanner.nextLine();
+
+            System.out.print("Enter Event ID: ");
+            String eventId = scanner.nextLine();
+
+            Event event = eventService.getEventById(eventId);
+
+            System.out.println("\nAvailable Ticket Categories:");
+
+            for (TicketCategory category : event.getTicketCategories()) {
+                System.out.println(
+                        category.getId() + " - " +
+                                category.getName() +
+                                " | Price: " + category.getPrice() +
+                                " | Available Seats: " + category.getAvailableSeats()
+                );
+            }
+
+            System.out.print("\nEnter Category ID: ");
+            String categoryId = scanner.nextLine();
+
+            Booking booking = bookingService.bookTicket(
+                    userId, eventId, categoryId
+            );
+
+            System.out.println("\nBooking Successful!");
+            System.out.println("Booking ID: " + booking.getBookingId());
+            System.out.println("Status: " + booking.getStatus());
+
+            if (booking.getTicketCode() != null) {
+                System.out.println("Ticket Code: " + booking.getTicketCode());
+            }
+
+        } catch (InvalidInputException | EventNotFoundException |
+                 DuplicateBookingException | SeatNotAvailableException e) {
+
+            System.out.println("\n[Error] " + e.getMessage());
+        }
+    }
+    private static void cancelBooking() {
+
+        System.out.println("\n--- CANCEL BOOKING ---");
+
+        try {
+            System.out.print("Enter Booking ID: ");
+            String bookingId = scanner.nextLine();
+
+            bookingService.cancelBooking(bookingId);
+
+            System.out.println("\nBooking cancelled successfully!");
+
+        } catch (InvalidInputException e) {
+
+            System.out.println("\n[Error] " + e.getMessage());
+        }
+    }
+    private static void viewMyBookings() {
+
+        System.out.println("\n--- MY BOOKINGS ---");
+
+        try {
+            System.out.print("Enter Attendee ID: ");
+            String userId = scanner.nextLine();
+
+            userService.getUserById(userId);
+
+            ArrayList<Booking> myBookings =
+                    new ArrayList<>(bookingService.getBookingsByUser(userId));
+
+            if (myBookings.isEmpty()) {
+                System.out.println("No bookings found.");
+            } else {
+                for (Booking booking : myBookings) {
+                    System.out.println(booking);
+                }
+            }
+
+        } catch (InvalidInputException e) {
+            System.out.println("[Error] " + e.getMessage());
         }
     }
 
