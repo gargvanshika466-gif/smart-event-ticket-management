@@ -4,6 +4,9 @@ import exception.InvalidInputException;
 
 public class InputValidator {
     public static void validateEmail(String email) throws InvalidInputException {
+        if (email == null || email.trim().isEmpty()) {
+            throw new InvalidInputException("Email cannot be empty");
+        }
         int at = email.indexOf('@');
         int dot = email.lastIndexOf('.');
         if (at <= 0) {
