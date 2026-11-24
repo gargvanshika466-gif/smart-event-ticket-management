@@ -12,6 +12,16 @@ public class InputValidator {
         }
         if (email.indexOf('.', email.indexOf('@')) == -1) {
             throw new InvalidInputException("Email must have a '.' after '@'");
+        int at = email.indexOf('@');
+        int dot = email.lastIndexOf('.');
+        if (at <= 0) {
+            throw new InvalidInputException("Email must have text before '@'");
+        }
+        if (dot < at + 2) {
+            throw new InvalidInputException("Email must have a domain with '.' after '@'");
+        }
+        if (dot == email.length() - 1) {
+            throw new InvalidInputException("Email cannot end with '.'");
         }
     }
 
