@@ -18,7 +18,6 @@ public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Service objects
     private static final EventService eventService = new EventService();
     private static final UserService userService = new UserService();
 
