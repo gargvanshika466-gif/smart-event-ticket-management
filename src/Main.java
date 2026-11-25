@@ -224,7 +224,6 @@ public class Main {
             System.out.println("2. View Available Events");
             System.out.println("3. Book Ticket");
             System.out.println("4. Cancel Booking");
-            System.out.println("TEST MENU UPDATED");
             System.out.println("5. View My Bookings");
             System.out.println("6. Back to Main Menu");
 
@@ -388,7 +387,13 @@ public class Main {
     // CONCURRENT BOOKING DEMO
     private static void runConcurrentDemo() {
 
-        System.out.println("[Day 3] ConcurrentBookingDemo will be connected later.");
+        System.out.println("\n--- CONCURRENT BOOKING DEMO ---");
+
+        try {
+            demo.ConcurrentBookingDemo.run();
+        } catch (Exception e) {
+            System.out.println("[Error] Demo failed: " + e.getMessage());
+        }
     }
 
     // INTEGER INPUT
